@@ -8,9 +8,6 @@ const userResolver = async (obj, args, context) => {
 
 const usersResolver = async (obj, args, context) => {
   const { substr, hometown, house, concentration, hobbies } = args
-
-  const users = await User.query()
-  return users
   /* TODO: Write a resolver which returns a list of all users.
 
   Once you're done, implement the following pieces of functionality one by one:
@@ -22,6 +19,33 @@ const usersResolver = async (obj, args, context) => {
     - concentration: include only users who have that concentration
     - hobbies: include only users who have indicated one of the hobbies in that list
   */
+
+  const query = User.query()
+
+  if (substr) {
+    query.where(raw('lower("name")'), 'like', `%${substr}%`)
+  }
+
+  if (hometown) {
+    query.where('hometown', hometown)
+  }
+
+  if (house) {
+    query.where('house', house)
+  }
+
+  if (concentration) {
+    query.where('concentration', concentration)
+  }
+
+  if (hobbies) {
+    query
+      .join('hobbies', 'users.id', 'hobbies.userId')
+      .whereIn('hobbies.hobby', hobbies)
+  }
+
+  const users = await query
+  return users
 }
 
 const userPostResolver = async (obj, args, context) => {
@@ -44,8 +68,8 @@ const resolver = {
   },
   User: {
     posts: userPostResolver,
-    hobbies: userHobbiesResolver
-  }
+    hobbies: userHobbiesResolver,
+  },
 }
 
 module.exports = resolver

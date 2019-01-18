@@ -43,8 +43,10 @@ const editPost = async (obj, args, context) => {
     }
   }
 
-  const newPost = await Post.query().patchAndFetchById(id, {content: newContent})
-  return {post: newPost}
+  const newPost = await Post.query().patchAndFetchById(id, {
+    content: newContent,
+  })
+  return { post: newPost }
   // TODO - finish this function which edits a post given its id and new content.
 }
 
